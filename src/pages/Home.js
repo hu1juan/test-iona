@@ -14,6 +14,7 @@ const HomePage = () => {
   const [page, setPage] = useState(1);
   const [id, setId] = useState(null);
   const [disableHandler, setDisableHandler] = useState(true);
+  const [showBtn, setShowBtn] = useState(true);
 
   useEffect(() => {
     getBreedList()
@@ -41,8 +42,17 @@ const HomePage = () => {
     getCats({ id, page })
       .then(({ data }) => {
         console.log(data);
-        setPage(page + 1);
-        dispatch({ type: 'GET_CATS', data })
+        const moreData = [];
+        data.map(el => {
+          const index = catList.findIndex(e => e.id === el.id);
+          return index === -1 ? moreData.push(el) : null;
+        });
+        if (moreData.length > 0) {
+          setPage(page + 1);
+          dispatch({ type: 'LOAD_MORE', moreData })
+        } else {
+          setShowBtn(false)
+        }
       });
   }
 
@@ -88,7 +98,14 @@ const HomePage = () => {
             )
           })}
         </Row>
-        <Button className="mt20" type="primary" disabled={disableHandler} onClick={handleLoadMore}>Load more</Button>
+        {showBtn ?
+          <Button
+            className="mt20"
+            type="primary"
+            disabled={disableHandler}
+            onClick={handleLoadMore}>
+            Load more</Button>
+          : null}
       </Col>
     </Row>
   );

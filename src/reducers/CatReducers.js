@@ -4,6 +4,8 @@ export const catReducers = (state, action) => {
       return { ...state, catBreeds: action.data };
     case 'GET_CATS':
       return { ...state, catList: action.data };
+    case 'LOAD_MORE':
+      return { ...state, catList: state.catList.concat(action.moreData) };
     default:
       return state;
   }
