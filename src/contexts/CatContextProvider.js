@@ -8,9 +8,9 @@ const CatContextProvider = (props) => {
   const [catsDataSource, dispatch] = useReducer(catReducers, initState)
 
   return (
-    <CatContextProvider.Provider value={{ catsDataSource, dispatch }}>
+    <CatContext.Provider value={{ catsDataSource, dispatch }}>
       {props.children}
-    </CatContextProvider.Provider>
+    </CatContext.Provider>
   );
 }
 

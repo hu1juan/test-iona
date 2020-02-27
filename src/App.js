@@ -5,19 +5,22 @@ import {
   Route,
   Redirect
 } from 'react-router-dom';
+import CatContextProvider from './contexts/CatContextProvider';
 
 const HOME = lazy(() => import('./pages/Home'));
 
 function App() {
   return (
-    <Router>
-      <Switch>
-        <Suspense fallback={<div>LOADING...</div>}>
-          <Route exact path='/' component={HOME} />
-          <Redirect from='*' exact to='/' />
-        </Suspense>
-      </Switch>
-    </Router>
+    <CatContextProvider>
+      <Router>
+        <Switch>
+          <Suspense fallback={<div>LOADING...</div>}>
+            <Route exact path='/' component={HOME} />
+            <Redirect from='*' exact to='/' />
+          </Suspense>
+        </Switch>
+      </Router>
+    </CatContextProvider>
   );
 }
 
