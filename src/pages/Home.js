@@ -1,15 +1,16 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { CatContext } from '../contexts/CatContextProvider';
 import { getBreedList, getCats } from '../services/CatService';
-import { Select, Row, Col, Button } from 'antd';
+import { Select, Row, Col, Button, Card } from 'antd';
 import '../assets/sass/Home.scss';
 
 //created const from ant design
 const { Option } = Select;
+const { Meta } = Card;
 
 const HomePage = () => {
   const { dispatch, catsDataSource } = useContext(CatContext);
-  const { catBreeds } = catsDataSource;
+  const { catBreeds, catList } = catsDataSource;
   const [page, setPage] = useState(1);
   const [id, setId] = useState(null);
   const [disableHandler, setDisableHandler] = useState(true);
@@ -23,6 +24,9 @@ const HomePage = () => {
   }, [dispatch]);
 
   const handleBreedSelect = (e) => {
+    if (!e) {
+      return handleClear();
+    }
     getCats({ id: e, page })
       .then(({ data }) => {
         console.log(data);
@@ -38,9 +42,16 @@ const HomePage = () => {
       .then(({ data }) => {
         console.log(data);
         setPage(page + 1);
-        setDisableHandler(false);
         dispatch({ type: 'GET_CATS', data })
       });
+  }
+
+  const handleClear = () => {
+    const data = [];
+    setId(null);
+    setPage(1);
+    setDisableHandler(true);
+    dispatch({ type: 'GET_CATS', data })
   }
 
   return (
@@ -59,6 +70,24 @@ const HomePage = () => {
             <Option value={el.id} key={el.id}>{el.name}</Option>
           )}
         </Select>
+      </Col>
+
+      <Col md={{ span: 16, offset: 4 }} sm={{ span: 20, offset: 2 }} xs={{ span: 21, offset: 1 }} className="mt20">
+        <Row type="flex" justify="start" align="top" gutter={[16, 16]}>
+          {catList.map(el => {
+            return (
+              <Col md={{ span: 6 }} sm={{ span: 12 }} xs={{ span: 24 }} key={el.id}>
+                <Card
+                  hoverable
+                  key={el.id}
+                  cover={<img alt="example" src={el.url} />}
+                >
+                  <Meta className="text-center" description={<Button>View Details</Button>} />
+                </Card>
+              </Col>
+            )
+          })}
+        </Row>
         <Button className="mt20" type="primary" disabled={disableHandler} onClick={handleLoadMore}>Load more</Button>
       </Col>
     </Row>

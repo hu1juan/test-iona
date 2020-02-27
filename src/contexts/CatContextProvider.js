@@ -4,7 +4,7 @@ import { catReducers } from '../reducers/CatReducers';
 export const CatContext = createContext();
 
 const CatContextProvider = (props) => {
-  const initState = { catBreeds: [] }
+  const initState = { catBreeds: [], catList: [] }
   const [catsDataSource, dispatch] = useReducer(catReducers, initState)
 
   return (
