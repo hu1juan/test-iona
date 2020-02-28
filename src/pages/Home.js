@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { CatContext } from '../contexts/CatContextProvider';
 import { getBreedList, getCats } from '../services/CatService';
 import { Select, Row, Col, Button, Card } from 'antd';
+import { Link } from 'react-router-dom';
 import '../assets/sass/Home.scss';
 
 //created const from ant design
@@ -10,16 +11,14 @@ const { Meta } = Card;
 
 const HomePage = () => {
   const { dispatch, catsDataSource } = useContext(CatContext);
-  const { catBreeds, catList } = catsDataSource;
+  const { catBreeds, catList, catID } = catsDataSource;
   const [page, setPage] = useState(1);
-  const [id, setId] = useState(null);
   const [disableHandler, setDisableHandler] = useState(true);
   const [showBtn, setShowBtn] = useState(true);
 
   useEffect(() => {
     getBreedList()
       .then(({ data }) => {
-        console.log(data);
         dispatch({ type: 'GET_BREEDS', data });
       })
   }, [dispatch]);
@@ -30,16 +29,17 @@ const HomePage = () => {
     }
     getCats({ id: e, page })
       .then(({ data }) => {
+        const catID = e;
         console.log(data);
-        setId(e);
         setPage(page + 1);
         setDisableHandler(false);
+        dispatch({ type: 'CAT_ID', catID })
         dispatch({ type: 'GET_CATS', data })
       });
   }
 
   const handleLoadMore = () => {
-    getCats({ id, page })
+    getCats({ id: catID, page })
       .then(({ data }) => {
         console.log(data);
         const moreData = [];
@@ -58,12 +58,17 @@ const HomePage = () => {
 
   const handleClear = () => {
     const data = [];
-    setId(null);
+    const catID = undefined;
     setPage(1);
     setDisableHandler(true);
+    dispatch({ type: 'CAT_ID', catID })
     dispatch({ type: 'GET_CATS', data })
   }
 
+  const handleViewDetails = (id) => {
+    console.log(id)
+    dispatch({ type: 'SELECTED_CAT', id })
+  }
   return (
     <Row className='home-wrapper'>
       <Col md={{ span: 16, offset: 4 }} sm={{ span: 20, offset: 2 }} xs={{ span: 21, offset: 1 }}>
@@ -74,6 +79,7 @@ const HomePage = () => {
           placeholder='Select Cat Breed'
           showSearch
           allowClear
+          defaultValue={catID}
           onChange={handleBreedSelect}
         >
           {catBreeds.map(el =>
@@ -92,7 +98,7 @@ const HomePage = () => {
                   key={el.id}
                   cover={<img alt="example" src={el.url} />}
                 >
-                  <Meta className="text-center" description={<Button>View Details</Button>} />
+                  <Meta className="text-center" description={<Link to={`/${el.id}`}><Button onClick={() => { handleViewDetails(el.id) }}>View Details</Button></Link>} />
                 </Card>
               </Col>
             )
