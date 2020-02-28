@@ -3,11 +3,11 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Redirect
 } from 'react-router-dom';
 import CatContextProvider from './contexts/CatContextProvider';
 
 const HOME = lazy(() => import('./pages/Home'));
+const VIEW_CAT = lazy(() => import('./pages/ViewCat'));
 
 function App() {
   return (
@@ -16,7 +16,7 @@ function App() {
         <Switch>
           <Suspense fallback={<div>LOADING...</div>}>
             <Route exact path='/' component={HOME} />
-            <Redirect from='*' exact to='/' />
+            <Route exact path='/:id' component={VIEW_CAT} />
           </Suspense>
         </Switch>
       </Router>
